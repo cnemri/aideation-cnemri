@@ -12,11 +12,11 @@ import React from "react";
 
 type Props = {
   params: {
-    id: string;
+    noteId: string;
   };
 };
 
-const NotebookPage = async ({ params: { id } }: Props) => {
+const NotebookPage = async ({ params: { noteId } }: Props) => {
   const { userId } = await auth();
   if (!userId) {
     return redirect("/dashboard");
@@ -25,7 +25,7 @@ const NotebookPage = async ({ params: { id } }: Props) => {
   const notes = await db
     .select()
     .from($notes)
-    .where(and(eq($notes.id, parseInt(id)), eq($notes.userId, userId)));
+    .where(and(eq($notes.id, parseInt(noteId)), eq($notes.userId, userId)));
 
   if (notes.length != 1) {
     return redirect("/dashboard");
@@ -33,7 +33,7 @@ const NotebookPage = async ({ params: { id } }: Props) => {
   const note = notes[0];
 
   return (
-    <div className="min-h-screen grainy p-8">
+    <div className="min-h-screen bg-gradient-to-r from-rose-50 to-teal-50 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="border shadow-xl border-stone-200 rounded-lg p-4 flex items-center">
           <Link href="/dashboard">

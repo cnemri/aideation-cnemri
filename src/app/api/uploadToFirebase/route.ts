@@ -7,20 +7,29 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { noteId } = await req.json();
-    const notes = await db.select().from($notes).where(eq($notes.id, noteId));
+    // extract out the dalle imageurl
+    // save it to firebase
+    const notes = await db
+      .select()
+      .from($notes)
+      .where(eq($notes.id, parseInt(noteId)));
     if (!notes[0].imageUrl) {
-      return new Response("no image url", { status: 400 });
+      return new NextResponse("no image url", { status: 400 });
     }
     const firebase_url = await uploadFileToFirebase(
       notes[0].imageUrl,
       notes[0].name
     );
-
-    await db.update($notes).set({
-      imageUrl: firebase_url,
-    });
-    return new NextResponse("success", { status: 200 });
+    // update the note with the firebase url
+    await db
+      .update($notes)
+      .set({
+        imageUrl: firebase_url,
+      })
+      .where(eq($notes.id, parseInt(noteId)));
+    return new NextResponse("ok", { status: 200 });
   } catch (error) {
-    return new NextResponse("failed", { status: 500 });
+    console.error(error);
+    return new NextResponse("error", { status: 500 });
   }
 }
