@@ -1,24 +1,28 @@
+"use client";
+
 import CreateNoteDialog from "@/components/CreateNoteDialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { db } from "@/lib/db";
-import { $notes } from "@/lib/db/schema";
 import { UserButton, auth } from "@clerk/nextjs";
-import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
+import { NoteType } from "@/lib/db/schema";
+import axios from "axios";
 
 type Props = {};
 
-const DashboardPage = async (props: Props) => {
-  const { userId } = auth();
-  const notes = await db
-    .select()
-    .from($notes)
-    .where(eq($notes.userId, userId!));
-
+const DashboardPage = (props: Props) => {
+  const [notes, setNotes] = React.useState([] as NoteType[]);
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const notesResponse = await axios.get("/api/getNotes/");
+      const fetchedNotes = notesResponse.data;
+      setNotes(fetchedNotes);
+    };
+    fetchNotes();
+  }, []);
   return (
     <>
       <div className="bg-gradient-to-r from-rose-50 to-teal-50 min-h-screen">
@@ -69,7 +73,9 @@ const DashboardPage = async (props: Props) => {
                       </h3>
                       <div className="h-1"></div>
                       <p className="text-sm text-gray-500">
-                        {new Date(note.createdAt).toLocaleDateString()}
+                        {note.createdAt
+                          ? new Date(note.createdAt).toLocaleDateString()
+                          : "N/A"}
                       </p>
                     </div>
                   </div>

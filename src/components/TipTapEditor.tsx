@@ -76,7 +76,7 @@ const TipTapEditor = ({ note }: Props) => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex justify-between items-center">
         {editor && <TipTapMenuBar editor={editor} />}
         <Button disabled variant={"outline"}>
           {isSavingNote ? "Saving..." : "Saved"}
