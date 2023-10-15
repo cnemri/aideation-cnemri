@@ -1,4 +1,4 @@
-// /api/createNoteBook
+// /api/createNotebook
 
 import { db } from "@/lib/db";
 import { $notes } from "@/lib/db/schema";
